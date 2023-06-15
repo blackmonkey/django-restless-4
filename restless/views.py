@@ -93,7 +93,7 @@ class Endpoint(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         if not hasattr(request, 'content_type'):
-            request.content_type = request.META.get('CONTENT_TYPE', 'text/plain')
+            request.content_type = request.headers.get('content-type', 'text/plain')
         request.params = dict((k, v) for (k, v) in request.GET.items())
         request.data = None
         request.raw_data = request.body

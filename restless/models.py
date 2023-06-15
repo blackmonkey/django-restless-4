@@ -3,7 +3,7 @@ import six
 from django.core import serializers
 from django.db import models
 
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 __all__ = ['serialize', 'flatten']
 
@@ -100,7 +100,7 @@ def serialize_model(obj, fields=None, include=None, exclude=None,
     data = {}
     for f in fields:
         if isinstance(f, six.string_types):
-            data[f] = force_text(getfield(f), strings_only=True)
+            data[f] = force_str(getfield(f), strings_only=True)
         elif isinstance(f, tuple):
             k, v = f
             if callable(v):
