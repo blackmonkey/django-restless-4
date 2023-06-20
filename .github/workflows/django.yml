@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
@@ -28,3 +27,13 @@ jobs:
     - name: Run Tests
       run: |
         python testproject/manage.py test
+
+  finish:
+    needs: build
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v2
+      with:
+        parallel-finished: true

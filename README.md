@@ -1,10 +1,10 @@
 # Django Restless 4
 
 [![Build Status](https://github.com/blackmonkey/django-restless-4/actions/workflows/django.yml/badge.svg)](https://github.com/blackmonkey/django-restless-4/actions/workflows/django.yml)
-[![Coverage Status](https://coveralls.io/repos/dobarkod/django-restless/badge.png)](https://coveralls.io/r/dobarkod/django-restless)
+[![Coverage Status](https://coveralls.io/repos/blackmonkey/django-restless-4/badge.png)](https://coveralls.io/r/blackmonkey/django-restless-4)
 [![Pypi version](https://img.shields.io/pypi/v/DjangoRestless)](https://pypi.org/project/DjangoRestless/)
 
-Django Restless is a lightweight set of tools for implementing JSON-based
+Django Restless 4 is a lightweight set of tools for implementing JSON-based
 RESTful APIs in Django. It helps with writing APIs that loosely follow
 the RESTful paradigm, without forcing you to do so, and without imposing a
 full-blown REST framework.
@@ -29,7 +29,7 @@ learn a whole new API to use Restless.
 
 ## Installation
 
-Django Restless is available from cheeseshop, so you can install it via pip:
+Django Restless 4 is available from cheeseshop, so you can install it via pip:
 
     pip install DjangoRestless
 
@@ -45,7 +45,7 @@ Documentation is graciously hosted by ReadTheDocs: http://django-restless.rtfd.o
 
 ## License
 
-Copyright (C) 2012-2023 by Django Restless contributors. See the
+Copyright (C) 2012-2023 by Django Restless 4 contributors. See the
 [AUTHORS](AUTHORS.md) file for the list of contributors.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
