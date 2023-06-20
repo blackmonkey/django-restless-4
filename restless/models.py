@@ -5,7 +5,7 @@ from decimal import Decimal
 from django.core import serializers
 from django.db import models
 
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 __all__ = ['serialize', 'flatten']
 
@@ -107,7 +107,7 @@ def serialize_model(obj, fields=None, include=None, exclude=None, fixup=None):
                 data[field_real_name] = serialize(getattr(obj, field_real_name), **v)
         else:
             field_real_name = fieldmap.get(f, f)
-            data[field_real_name] = force_text(value, strings_only=True)
+            data[field_real_name] = force_str(value, strings_only=True)
 
     if fixup:
         data = fixup(obj, data)

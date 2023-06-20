@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 import testapp.urls
 
 try:
@@ -9,5 +9,5 @@ except ImportError:
 
 
 urlpatterns = patterns('',
-    url('', include(testapp.urls)),
+    path('', include(testapp.urls)),
 )

@@ -3,7 +3,7 @@ from django.utils.encoding import DjangoUnicodeDecodeError
 import base64
 
 try:
-    from django.utils.encoding import smart_text
+    from django.utils.encoding import smart_str
 except ImportError:
     from django.utils.encoding import smart_unicode as smart_text
 
@@ -46,8 +46,8 @@ class BasicHttpAuthMixin(object):
     """
 
     def authenticate(self, request):
-        if 'HTTP_AUTHORIZATION' in request.META:
-            authdata = request.META['HTTP_AUTHORIZATION'].split()
+        if 'authorization' in request.headers:
+            authdata = request.headers['authorization'].split()
             if len(authdata) == 2 and authdata[0].lower() == "basic":
                 try:
                     raw = authdata[1].encode('ascii')
@@ -55,8 +55,8 @@ class BasicHttpAuthMixin(object):
                 except:
                     return
                 try:
-                    uname, passwd = (smart_text(auth_parts[0]),
-                        smart_text(auth_parts[1]))
+                    uname, passwd = (smart_str(auth_parts[0]),
+                        smart_str(auth_parts[1]))
                 except DjangoUnicodeDecodeError:
                     return
 
