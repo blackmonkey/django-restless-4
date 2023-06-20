@@ -5,3 +5,5 @@
 /*.egg-info
 /testproject/.coverage
 /testproject/htmlcov
+
+*.code-workspace
