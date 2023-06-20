@@ -1,8 +1,8 @@
-# Django Restless
+# Django Restless 4
 
-[![Build Status](https://secure.travis-ci.org/dobarkod/django-restless.png?branch=master)](http://travis-ci.org/dobarkod/django-restless)
+[![Build Status](https://github.com/blackmonkey/django-restless-4/actions/workflows/django.yml/badge.svg)](https://github.com/blackmonkey/django-restless-4/actions/workflows/django.yml)
 [![Coverage Status](https://coveralls.io/repos/dobarkod/django-restless/badge.png)](https://coveralls.io/r/dobarkod/django-restless)
-[![PyPi version](https://pypip.in/v/DjangoRestless/badge.png)](https://crate.io/packages/DjangoRestless/)
+[![Pypi version](https://img.shields.io/pypi/v/DjangoRestless)](https://pypi.org/project/DjangoRestless/)
 
 Django Restless is a lightweight set of tools for implementing JSON-based
 RESTful APIs in Django. It helps with writing APIs that loosely follow
@@ -35,10 +35,9 @@ Django Restless is available from cheeseshop, so you can install it via pip:
 
 For the latest and the greatest, you can also get it directly from git master:
 
-    pip install -e git+ssh://github.com/senko/DjangoRestless/tree/master
+    pip install -e git+ssh://github.com/blackmonkey/django-restless-4/tree/main
 
-The supported Python versions are 2.6, 2.7, 3.3 and 3.4, and the supported
-Django versions are 1.5+.
+The supported Python versions are 3.7+, and the supported Django versions are 4.1+.
 
 ## Documentation
 
