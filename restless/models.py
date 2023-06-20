@@ -115,7 +115,7 @@ def serialize_model(obj, fields=None, include=None, exclude=None, fixup=None):
     return data
 
 
-def serialize(src, fields=None, related=None, include=None, exclude=None, fixup=None):
+def serialize(src, fields=None, related=None, include=None, exclude=None, fixup=None, filter=None):
     """Serialize Model or a QuerySet instance to Python primitives.
 
     By default, all the model fields (and only the model fields) are
@@ -186,13 +186,13 @@ def serialize(src, fields=None, related=None, include=None, exclude=None, fixup=
         return serialize_deprecated(src, fields=fields, related=related)
 
     def subs(subsrc):
-        return serialize(subsrc, fields=fields, include=include, exclude=exclude, fixup=fixup)
+        return serialize(subsrc, fields=fields, include=include, exclude=exclude, fixup=fixup, filter=filter)
 
-    if isinstance(src, models.Manager):
-        return [subs(i) for i in src.all()]
+    if isinstance(src, (models.Manager, models.query.QuerySet)):
+        src = src.filter(filter) if filter else src.all()
+        return [subs(i) for i in src]
 
     elif (isinstance(src, list) or
-            isinstance(src, models.query.QuerySet) or
             isinstance(src, set)):
         return [subs(i) for i in src]
 

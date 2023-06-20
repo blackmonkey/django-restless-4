@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from django.conf import settings
 from django.http import HttpResponse, StreamingHttpResponse
-from .http import Http200, Http500, HttpError
+from .http import Http200, Http400, Http500, HttpError
 
 import traceback
 import json
@@ -28,6 +28,7 @@ class Endpoint(View):
 
       * request.content_type - the content type of the request
       * request.params - a dictionary with GET parameters
+      * request.page - an integer representation of the page number
       * request.data - a dictionary with POST/PUT parameters, as parsed from
           either form submission or submitted application/json data payload
       * request.raw_data - string containing raw request body
@@ -97,6 +98,16 @@ class Endpoint(View):
         request.params = dict((k, v) for (k, v) in request.GET.items())
         request.data = None
         request.raw_data = request.body
+
+        try:
+            request.page = int(request.params.get('page'))
+        except:
+            response = Http400(
+                """\
+                %s is not a valid page number. Please only use an integer \
+                value only.
+                """ % (str(request.params.get('page')))
+            )
 
         try:
             self._parse_body(request)

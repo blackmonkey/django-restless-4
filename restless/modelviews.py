@@ -69,7 +69,7 @@ class ListEndpoint(Endpoint):
         else:
             raise HttpError(404, 'Resource Not Found')
 
-    def serialize(self, objs):
+    def serialize(self, objs, *args, **kwargs):
         """Serialize the objects in the response.
 
         By default, the method uses the :py:func:`restless.models.serialize`
@@ -77,7 +77,7 @@ class ListEndpoint(Endpoint):
         method to customize the serialization.
         """
 
-        return serialize(objs, fields=self.fields, include=self.extra_fields)
+        return serialize(objs, fields=self.fields, include=self.extra_fields, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         """Return a serialized list of objects in this endpoint."""
