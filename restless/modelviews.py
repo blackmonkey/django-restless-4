@@ -1,3 +1,5 @@
+import re
+
 from django.forms.models import modelform_factory
 
 from .views import Endpoint
@@ -46,6 +48,8 @@ class ListEndpoint(Endpoint):
     model = None
     form = None
     methods = ['GET', 'POST']
+    fields = None
+    extra_fields = None
 
     def get_query_set(self, request, *args, **kwargs):
         """Return a QuerySet that this endpoint represents.
@@ -73,7 +77,7 @@ class ListEndpoint(Endpoint):
         method to customize the serialization.
         """
 
-        return serialize(objs)
+        return serialize(objs, fields=self.fields, include=self.extra_fields)
 
     def get(self, request, *args, **kwargs):
         """Return a serialized list of objects in this endpoint."""
@@ -95,7 +99,7 @@ class ListEndpoint(Endpoint):
         if form.is_valid():
             obj = form.save()
             return Http201(self.serialize(obj))
-            
+
         raise HttpError(400, 'Invalid Data', errors=form.errors)
 
 
@@ -120,7 +124,9 @@ class DetailEndpoint(Endpoint):
     model = None
     form = None
     lookup_field = 'pk'
-    methods = ['GET', 'PUT', 'DELETE']
+    fields = None
+    extra_fields = None
+    methods = ['GET', 'PUT', 'PATCH', 'DELETE']
 
     def get_instance(self, request, *args, **kwargs):
         """Return a model instance represented by this endpoint.
@@ -151,6 +157,20 @@ class DetailEndpoint(Endpoint):
         else:
             raise HttpError(404, 'Resource Not Found')
 
+    def get_instance_as_queryset(self, request, *args, **kwargs):
+        if self.model and self.lookup_field in kwargs:
+            lookup_value = kwargs.get(self.lookup_field)
+            result = self.model.objects.filter(**{
+                self.lookup_field: lookup_value
+            })
+
+            count = result.count()
+            if count == 0:
+                raise HttpError(404, 'Resource Not Found')
+
+            assert count == 1, f'{self.model.__class__.__name__}: {self.lookup_field}:{lookup_value}'
+            return result
+
     def serialize(self, obj):
         """Serialize the object in the response.
 
@@ -159,7 +179,7 @@ class DetailEndpoint(Endpoint):
         method to customize the serialization.
         """
 
-        return serialize(obj)
+        return serialize(obj, fields=self.fields, include=self.extra_fields)
 
     def get(self, request, *args, **kwargs):
         """Return the serialized object represented by this endpoint."""
@@ -169,19 +189,72 @@ class DetailEndpoint(Endpoint):
 
         return self.serialize(self.get_instance(request, *args, **kwargs))
 
+    def patch(self, request, *args, **kwargs):
+        """Update the object represented by this endpoint."""
+
+        if 'PATCH' not in self.methods:
+            raise HttpError(405, 'Method Not Allowed')
+
+        queryset = self.get_instance_as_queryset(request, *args, **kwargs)
+        values = {}
+        fields_names = self.get_fields_names()
+        for key, value in request.data.items():
+            clean_key = key
+            if key.endswith('_id'):
+                clean_key = re.sub('_id$', '', key)
+
+            if key in fields_names or clean_key in fields_names:
+                values[key] = value
+
+        instance = self.get_instance(request, *args, **kwargs)
+        for key, value in values.items():
+                setattr(instance, key, value)
+
+        queryset.update(**values)
+
+        return Http200(self.serialize(instance))
+
+    def get_foreign_keys(self):
+        fields = []
+        for field in self.model._meta.fields:
+            class_name = field.__class__.__name__
+            if class_name == 'ForeignKey':
+                fields.append(field.name)
+        return fields
+
+    def get_fields_names(self):
+        fields = []
+        for field in self.model._meta.fields:
+            fields.append(field.name)
+        return fields
+
     def put(self, request, *args, **kwargs):
         """Update the object represented by this endpoint."""
 
         if 'PUT' not in self.methods:
             raise HttpError(405, 'Method Not Allowed')
 
+        pk = kwargs[self.lookup_field] if self.lookup_field in kwargs else None
+
+        for fk_field in self.get_foreign_keys():
+            id_field = f'{fk_field}_id'
+            if id_field in request.data:
+                request.data[fk_field] = request.data.pop(id_field)
+
         Form = _get_form(self.form, self.model)
         instance = self.get_instance(request, *args, **kwargs)
-        form = Form(request.data or None, request.FILES,
-            instance=instance)
+        form = Form(request.data or None, request.FILES, instance=instance)
         if form.is_valid():
-            obj = form.save()
-            return Http200(self.serialize(obj))
+            obj = form.save(commit=False)
+            obj.pk = pk
+            obj.save()
+            form.save_m2m()
+
+            if instance:
+                return Http200(self.serialize(obj))
+            else:
+                return Http201(self.serialize(obj))
+
         raise HttpError(400, 'Invalid data', errors=form.errors)
 
     def delete(self, request, *args, **kwargs):

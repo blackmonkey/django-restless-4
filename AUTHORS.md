@@ -3,6 +3,7 @@
 People who contributed to development of Django Restless, in alphabetical
 order:
 
+* Cléber Zavadniak <cleberman@gmail.com>
 * Deni Bertović <deni@kset.org>
 * Isaev Igor <i-told@ya.ru>
 * Ivan Habunek <ivan.habunek@gmail.com>
