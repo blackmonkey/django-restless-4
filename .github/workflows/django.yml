@@ -24,17 +24,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Run Tests
+        pip install coverage
+    - name: Run tests and generate coverage report
       run: |
-        python testproject/manage.py test
-
-  finish:
-    needs: build
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    steps:
-    - name: Coveralls GitHub Action
+        coverage run --source='restless' testproject/manage.py test
+        coverage xml
+    - name: Send coverage report to Coveralls
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        parallel-finished: true
