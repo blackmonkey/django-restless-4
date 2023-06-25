@@ -7,3 +7,6 @@
 /testproject/htmlcov
 
 *.code-workspace
+/.vscode
+.coverage
+WorkLog.txt

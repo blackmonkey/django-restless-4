@@ -86,14 +86,12 @@ class Endpoint(View):
         request.data = None
         request.raw_data = request.body
 
-        try:
-            request.page = int(request.params.get('page'))
-        except ValueError:
-            response = Http400(
-                f"{str(request.params.get('page'))} is not a valid page number. "
-                "Please only use an integer value only."
-            )
-            return response
+        if 'page' in request.params:
+            page = request.params.get('page')
+            try:
+                request.page = int(page)
+            except ValueError:
+                return Http400(f"{page} is not a valid page number. Please only use an integer value only.")
 
         try:
             self._parse_body(request)

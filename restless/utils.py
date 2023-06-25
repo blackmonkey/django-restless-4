@@ -33,12 +33,9 @@ class PaginatorMixin:
 
     def page(self, page_num):
         if self._check_for_pages():
-            try:
-                page_num = int(page_num)
-            except ValueError as e:
+            if not isinstance(page_num, int):
                 raise ValueError(
                     f"You must specify an integer value for your page number. {page_num} is not a valid number."
-                    f" For more information, look at the traceback.\n{e}"
                 )
 
             if page_num < 1:

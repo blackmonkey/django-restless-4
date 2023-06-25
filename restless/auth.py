@@ -56,7 +56,7 @@ class BasicHttpAuthMixin(object):
                     raw = authdata[1].encode('ascii')
                     auth_parts = base64.b64decode(raw).split(b':')
                     uname, passwd = (smart_str(auth_parts[0]), smart_str(auth_parts[1]))
-                except (binascii.Error, base64.Error, DjangoUnicodeDecodeError, UnicodeError):
+                except (binascii.Error, DjangoUnicodeDecodeError, UnicodeError):
                     return
 
                 user = auth.authenticate(username=uname, password=passwd)

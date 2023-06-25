@@ -8,43 +8,41 @@ from django.utils.encoding import force_str
 __all__ = ['serialize', 'flatten']
 
 
-def serialize_model(obj, fields=None, include=[], exclude=[], fixup=None):
-    fieldmap = {f.name: f.attname for f in obj._meta.concrete_model._meta.local_fields}
+def serialize_model(obj, fields=None, include=None, exclude=None, fixup=None):
+    include = include or []
+    exclude = exclude or []
 
-    def getvalueof(f):
-        return getattr(obj, fieldmap.get(f, f))
-
-    fields = list(fields) if fields else list(fieldmap.keys())
+    fields = list(fields) if fields else [f.name for f in obj._meta.concrete_model._meta.local_fields]
     fields = [f for f in fields if f not in exclude]
-
     for i in include:
         if isinstance(i, (tuple, six.string_types)):
             fields.append(i)
 
+    # If there are any duplicated items in `fields`, the latter one will override the former one during the following
+    # querying of field values.
+
     data = {}
     for f in fields:
-        value = getvalueof(f)
-        if isinstance(value, (datetime.datetime, datetime.date, datetime.time, Decimal)):
-            field_real_name = fieldmap.get(f, f)
-            data[field_real_name] = '{}'.format(value)
-        elif isinstance(f, tuple):
+        if isinstance(f, tuple):
             k, v = f
-            field_real_name = fieldmap.get(k, k)
             if callable(v):
-                data[field_real_name] = v(obj)
+                data[k] = v(obj)
             elif isinstance(v, dict):
-                data[field_real_name] = serialize(getattr(obj, field_real_name), **v)
+                data[k] = serialize(getattr(obj, k), **v)
         else:
-            field_real_name = fieldmap.get(f, f)
-            data[field_real_name] = force_str(value, strings_only=True)
+            v = getattr(obj, f)
+            if isinstance(v, (datetime.datetime, datetime.date, datetime.time, Decimal)):
+                data[f] = f'{v}'
+            else:
+                data[f] = force_str(v, strings_only=True)
 
     if fixup:
-        data = fixup(obj, data)
+        data = fixup(data)
 
     return data
 
 
-def serialize(src, fields=None, include=[], exclude=[], fixup=None, query_filter=None):
+def serialize(src, fields=None, include=None, exclude=None, fixup=None, query_filter=None):
     """
     Serialize Model or a QuerySet instance to Python primitives.
 
@@ -124,7 +122,7 @@ def flatten(attname):
     be overwritten.
     """
 
-    def fixup(obj, data):
+    def fixup(data):
         for k, v in data[attname].items():
             data[k] = v
         del data[attname]

@@ -100,11 +100,11 @@ class TestSerialization(TestCase):
         s = serialize(self.author, ['name'])
         self.assertEqual(s, {'name': 'User Foo'})
 
-    def test_shallow_foreign_key_serialization(self):
-        """Test that foreign key fields are serialized as integer IDs."""
+    def test_foreign_key_serialization(self):
+        """Test that foreign key fields are serialized as their display names."""
 
         s = serialize(self.books[0])
-        self.assertEqual(s['author'], self.author.id)
+        self.assertEqual(s['author'], f'Author object ({self.author.id})')
 
     def test_serialize_related(self):
         """Test serialization of related model"""
@@ -152,8 +152,8 @@ class TestSerialization(TestCase):
         qs = Author.objects.all()
         _ = list(qs)  # force sql query execution
 
-        # Check that the same (cached) queryset is used, instead of a clone
-        with self.assertNumQueries(0):
+        # Check that a new queryset is executed, instead of the above cached one
+        with self.assertNumQueries(1):
             s = serialize(qs)
 
         self.assertEqual(s,
