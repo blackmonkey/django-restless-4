@@ -94,7 +94,7 @@ if you're using HTTP Basic authentication, have all your views subclass
 :py:class:`restless.auth.login_required` for requiring the user be
 authenticated::
 
-    from restless.auth import BasicHttpAuthMixin, login_required
+    from restless.views import BasicHttpAuthMixin, login_required
 
     class SecretGreeting(Endpoint, BasicHttpAuthMixin):
         @login_required

@@ -1,9 +1,8 @@
 import base64
 
-from restless.auth import AuthenticateEndpoint, BasicHttpAuthMixin, login_required
 from restless.http import Http201, Http400, Http403, Http404, HttpError
 from restless.models import serialize
-from restless.views import Endpoint
+from restless.views import AbstractAuthMixin, AuthenticateEndpoint, BasicHttpAuthMixin, Endpoint, login_required
 from restless.modelviews import ListEndpoint, DetailEndpoint, ActionEndpoint
 
 from .forms import AuthorForm
@@ -81,7 +80,7 @@ class TestBasicAuth(Endpoint, BasicHttpAuthMixin):
         return serialize(request.user)
 
 
-class TestCustomAuthMethod(Endpoint):
+class TestCustomAuthMethod(Endpoint, AbstractAuthMixin):
     def authenticate(self, request):
         user = request.params.get('user')
         if user == 'friend':

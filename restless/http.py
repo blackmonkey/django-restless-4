@@ -72,13 +72,11 @@ class Http401(http.HttpResponse):
     """HTTP 401 UNAUTHENTICATED"""
     status_code = 401
 
-    def __init__(self, typ='basic', realm="api"):
-        super(Http401, self).__init__()
-        if typ == 'basic':
-            self['WWW-Authenticate'] = 'Basic realm="%s"' % realm
-        else:
-            assert False, 'Invalid type ' + str(typ)
-            self.status_code = 403
+    def __init__(self, typ='basic', realm='api', msg='Unauthorized'):
+        if typ.lower() != 'basic':
+            msg = 'Invalid authorization header'
+        super(Http401, self).__init__(msg)
+        self['WWW-Authenticate'] = f'{typ.capitalize()} realm="{realm}"'
 
 
 class Http403(JSONErrorResponse, http.HttpResponseForbidden):
@@ -86,9 +84,9 @@ class Http403(JSONErrorResponse, http.HttpResponseForbidden):
     pass
 
 
-class Http404(JSONErrorResponse):
+class Http404(JSONErrorResponse, http.HttpResponseNotFound):
     """HTTP 404 Not Found"""
-    status_code = 404
+    pass
 
 
 class Http409(JSONErrorResponse):
@@ -96,9 +94,9 @@ class Http409(JSONErrorResponse):
     status_code = 409
 
 
-class Http500(JSONErrorResponse):
+class Http500(JSONErrorResponse, http.HttpResponseServerError):
     """HTTP 500 Internal Server Error"""
-    status_code = 500
+    pass
 
 
 class HttpError(Exception):

@@ -361,11 +361,18 @@ class TestAuth(TestCase):
         r = self.client.get('login_view', data={'username': 'foo', 'password': 'bar',})
         self.assertEqual(r.status_code, 200)
 
+    def test_login_post_success(self):
+        """Test that correct username/password login succeeds in POST method"""
+
+        # multipart/form-data is default in test client
+        r = self.client.post('login_view', data={'username': 'foo', 'password': 'bar',})
+        self.assertEqual(r.status_code, 200)
+
     def test_login_failure(self):
         """Test that incorrect username/password login fails"""
 
         r = self.client.get('login_view', data={'username': 'nonexistent', 'password': 'pwd',})
-        self.assertEqual(r.status_code, 403)
+        self.assertEqual(r.status_code, 401)
 
     def test_basic_auth_challenge(self):
         """Test that HTTP Basic Auth challenge is issued"""
@@ -386,6 +393,13 @@ class TestAuth(TestCase):
 
         r = self.client.get('basic_auth_view', extra={'HTTP_AUTHORIZATION': 'Basic xyz',})
         self.assertEqual(r.status_code, 401)
+
+    def test_basic_auth_invalid_auth_type(self):
+        """Test that invalid Auth type doesn't crash the pasrser"""
+
+        r = self.client.get('basic_auth_view', extra={'HTTP_AUTHORIZATION': 'Invalid xyz',})
+        self.assertEqual(r.status_code, 401)
+        self.assertEqual(r.content.decode(r.charset), 'Invalid authorization header')
 
     def test_custom_auth_fn_returning_none_allows_request(self):
         r = self.client.get('custom_auth_method', data={'user': 'friend'})

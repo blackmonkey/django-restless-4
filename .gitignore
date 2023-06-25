@@ -9,4 +9,5 @@
 *.code-workspace
 /.vscode
 .coverage
+coverage.xml
 WorkLog.txt
