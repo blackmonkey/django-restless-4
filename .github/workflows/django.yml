@@ -27,7 +27,8 @@ jobs:
         pip install coverage
     - name: Run tests and generate coverage report
       run: |
-        coverage run --source='restless' testproject/manage.py test
+        cd testproject
+        coverage run --source='../restless' manage.py test
         coverage xml
     - name: Send coverage report to Coveralls
       uses: coverallsapp/github-action@v2
