@@ -1,7 +1,7 @@
 # Django Restless 4
 
 [![Build Status](https://github.com/blackmonkey/django-restless-4/actions/workflows/django.yml/badge.svg)](https://github.com/blackmonkey/django-restless-4/actions/workflows/django.yml)
-[![Coverage Status](https://coveralls.io/repos/github/blackmonkey/django-restless-4/badge.svg)](https://coveralls.io/github/blackmonkey/django-restless-4)
+[![Coverage Status](https://coveralls.io/repos/github/blackmonkey/django-restless-4/badge.svg?branch=main)](https://coveralls.io/github/blackmonkey/django-restless-4?branch=main)
 [![Pypi version](https://img.shields.io/pypi/v/DjangoRestless)](https://pypi.org/project/DjangoRestless/)
 
 Django Restless 4 is a lightweight set of tools for implementing JSON-based
