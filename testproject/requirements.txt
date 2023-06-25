@@ -1,4 +1,3 @@
 Django
 Sphinx
-coverage
 six

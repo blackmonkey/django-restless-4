@@ -1,48 +1,44 @@
 import re
 
+from django import VERSION
 from django.forms.models import modelform_factory
 
-from .views import Endpoint
 from .http import HttpError, Http200, Http201
-
 from .models import serialize
+from .views import Endpoint
 
-__all__ = ['ListEndpoint', 'DetailEndpoint', 'ActionEndpoint']
+
+__all__ = [
+    'ListEndpoint',
+    'DetailEndpoint',
+    'ActionEndpoint'
+]
 
 
 def _get_form(form, model):
-    from django import VERSION
-
-    if VERSION[:2] >= (1,8):
-        mf = lambda m: modelform_factory(m, fields='__all__')
-    else:
-        mf = modelform_factory
-
     if form:
         return form
-    elif model:
-        return mf(model)
-    else:
-        raise NotImplementedError('Form or Model class not specified')
+
+    if model:
+        if VERSION[:2] >= (1, 8):
+            return modelform_factory(model, fields='__all__')
+        return modelform_factory(model)
+
+    raise NotImplementedError('Form or Model class not specified')
 
 
 class ListEndpoint(Endpoint):
     """
-    List :py:class:`restless.views.Endpoint` supporting getting a list of
-    objects and creating a new one. The endpoint exports two view methods by
-    default: get (for getting the list of objects) and post (for creating a
-    new object).
+    List :py:class:`restless.views.Endpoint` supporting getting a list of objects and creating a new one. The endpoint
+    exports two view methods by default: get (for getting the list of objects) and post (for creating a new object).
 
-    The only required configuration for the endpoint is the `model`
-    class attribute, which should be set to the model you want to have a list
-    (and/or create) endpoints for.
+    The only required configuration for the endpoint is the `model` class attribute, which should be set to the model
+    you want to have a list (and/or create) endpoints for.
 
-    You can also provide a `form` class attribute, which should be the
-    model form that's used for creating the model. If not provided, the
-    default model class for the model will be created automatically.
+    You can also provide a `form` class attribute, which should be the model form that's used for creating the model.
+    If not provided, the default model class for the model will be created automatically.
 
-    You can restrict the HTTP methods available by specifying the `methods`
-    class variable.
+    You can restrict the HTTP methods available by specifying the `methods` class variable.
     """
 
     model = None
@@ -52,29 +48,28 @@ class ListEndpoint(Endpoint):
     extra_fields = None
 
     def get_query_set(self, request, *args, **kwargs):
-        """Return a QuerySet that this endpoint represents.
+        """
+        Return a QuerySet that this endpoint represents.
 
-        If `model` class attribute is set, this method returns the `all()`
-        queryset for the model. You can override the method to provide custom
-        behaviour. The `args` and `kwargs` parameters are passed in directly
-        from the URL pattern match.
+        If `model` class attribute is set, this method returns the `all()` queryset for the model. You can override the
+        method to provide custom behaviour. The `args` and `kwargs` parameters are passed in directly from the URL
+        pattern match.
 
-        If the method raises a :py:class:`restless.http.HttpError` exception,
-        the rest of the request processing is terminated and the error is
-        immediately returned to the client.
+        If the method raises a :py:class:`restless.http.HttpError` exception, the rest of the request processing is
+        terminated and the error is immediately returned to the client.
         """
 
         if self.model:
             return self.model.objects.all()
-        else:
-            raise HttpError(404, 'Resource Not Found')
+
+        raise HttpError(404, 'Resource Not Found')
 
     def serialize(self, objs, *args, **kwargs):
-        """Serialize the objects in the response.
+        """
+        Serialize the objects in the response.
 
-        By default, the method uses the :py:func:`restless.models.serialize`
-        function to serialize the objects with default behaviour. Override the
-        method to customize the serialization.
+        By default, the method uses the :py:func:`restless.models.serialize` function to serialize the objects with
+        default behaviour. Override the method to customize the serialization.
         """
 
         return serialize(objs, fields=self.fields, include=self.extra_fields, *args, **kwargs)
@@ -94,8 +89,8 @@ class ListEndpoint(Endpoint):
         if 'POST' not in self.methods:
             raise HttpError(405, 'Method Not Allowed')
 
-        Form = _get_form(self.form, self.model)
-        form = Form(request.data or None, request.FILES)
+        form_cls = _get_form(self.form, self.model)
+        form = form_cls(request.data or None, request.FILES)
         if form.is_valid():
             obj = form.save()
             return Http201(self.serialize(obj))
@@ -105,22 +100,18 @@ class ListEndpoint(Endpoint):
 
 class DetailEndpoint(Endpoint):
     """
-    Detail :py:class:`restless.views.Endpoint` supports getting a single
-    object from the database (HTTP GET), updating it (HTTP PUT) and deleting
-    it (HTTP DELETE).
+    Detail :py:class:`restless.views.Endpoint` supports getting a single object from the database (HTTP GET), updating
+    it (HTTP PUT) and deleting it (HTTP DELETE).
 
-    The only required configuration for the endpoint is the `model`
-    class attribute, which should be set to the model you want to have the
-    detail endpoints for.
+    The only required configuration for the endpoint is the `model` class attribute, which should be set to the model
+    you want to have the detail endpoints for.
 
-    You can also provide a `form` class attribute, which should be the
-    model form that's used for updating the model. If not provided, the
-    default model class for the model will be created automatically.
+    You can also provide a `form` class attribute, which should be the model form that's used for updating the model.
+    If not provided, the default model class for the model will be created automatically.
 
-    You can restrict the HTTP methods available by specifying the `methods`
-    class variable.
-
+    You can restrict the HTTP methods available by specifying the `methods` class variable.
     """
+
     model = None
     form = None
     lookup_field = 'pk'
@@ -129,29 +120,25 @@ class DetailEndpoint(Endpoint):
     methods = ['GET', 'PUT', 'PATCH', 'DELETE']
 
     def get_instance(self, request, *args, **kwargs):
-        """Return a model instance represented by this endpoint.
+        """
+        Return a model instance represented by this endpoint.
 
-        If `model` is set and the primary key keyword argument is present,
-        the method attempts to get the model with the primary key equal
-        to the url argument.
+        If `model` is set and the primary key keyword argument is present, the method attempts to get the model with
+        the primary key equal to the url argument.
 
-        By default, the primary key keyword argument name is `pk`. This can
-        be overridden by setting the `lookup_field` class attribute.
+        By default, the primary key keyword argument name is `pk`. This can be overridden by setting the `lookup_field`
+        class attribute.
 
-        You can override the method to provide custom behaviour. The `args`
-        and `kwargs` parameters are passed in directly from the URL pattern
-        match.
+        You can override the method to provide custom behaviour. The `args` and `kwargs` parameters are passed in
+        directly from the URL pattern match.
 
-        If the method raises a :py:class:`restless.http.HttpError` exception,
-        the rest of the request processing is terminated and the error is
-        immediately returned to the client.
+        If the method raises a :py:class:`restless.http.HttpError` exception, the rest of the request processing is
+        terminated and the error is immediately returned to the client.
         """
 
         if self.model and self.lookup_field in kwargs:
             try:
-                return self.model.objects.get(**{
-                    self.lookup_field: kwargs.get(self.lookup_field)
-                })
+                return self.model.objects.get(**{self.lookup_field: kwargs.get(self.lookup_field)})
             except self.model.DoesNotExist:
                 raise HttpError(404, 'Resource Not Found')
         else:
@@ -160,9 +147,7 @@ class DetailEndpoint(Endpoint):
     def get_instance_as_queryset(self, request, *args, **kwargs):
         if self.model and self.lookup_field in kwargs:
             lookup_value = kwargs.get(self.lookup_field)
-            result = self.model.objects.filter(**{
-                self.lookup_field: lookup_value
-            })
+            result = self.model.objects.filter(**{self.lookup_field: lookup_value})
 
             count = result.count()
             if count == 0:
@@ -172,11 +157,11 @@ class DetailEndpoint(Endpoint):
             return result
 
     def serialize(self, obj):
-        """Serialize the object in the response.
+        """
+        Serialize the object in the response.
 
-        By default, the method uses the :py:func:`restless.models.serialize`
-        function to serialize the object with default behaviour. Override the
-        method to customize the serialization.
+        By default, the method uses the :py:func:`restless.models.serialize` function to serialize the object with
+        default behaviour. Override the method to customize the serialization.
         """
 
         return serialize(obj, fields=self.fields, include=self.extra_fields)
@@ -208,7 +193,7 @@ class DetailEndpoint(Endpoint):
 
         instance = self.get_instance(request, *args, **kwargs)
         for key, value in values.items():
-                setattr(instance, key, value)
+            setattr(instance, key, value)
 
         queryset.update(**values)
 
@@ -241,9 +226,9 @@ class DetailEndpoint(Endpoint):
             if id_field in request.data:
                 request.data[fk_field] = request.data.pop(id_field)
 
-        Form = _get_form(self.form, self.model)
+        form_cls = _get_form(self.form, self.model)
         instance = self.get_instance(request, *args, **kwargs)
-        form = Form(request.data or None, request.FILES, instance=instance)
+        form = form_cls(request.data or None, request.FILES, instance=instance)
         if form.is_valid():
             obj = form.save(commit=False)
             obj.pk = pk
@@ -252,8 +237,7 @@ class DetailEndpoint(Endpoint):
 
             if instance:
                 return Http200(self.serialize(obj))
-            else:
-                return Http201(self.serialize(obj))
+            return Http201(self.serialize(obj))
 
         raise HttpError(400, 'Invalid data', errors=form.errors)
 
@@ -270,15 +254,12 @@ class DetailEndpoint(Endpoint):
 
 class ActionEndpoint(DetailEndpoint):
     """
-    A variant of :py:class:`DetailEndpoint` for supporting a RPC-style action
-    on a resource. All the documentation for DetailEndpoint applies, but
-    only the `POST` HTTP method is allowed by default, and it invokes the
+    A variant of :py:class:`DetailEndpoint` for supporting a RPC-style action on a resource. All the documentation for
+    DetailEndpoint applies, but only the `POST` HTTP method is allowed by default, and it invokes the
     :py:meth:`ActionEndpoint.action` method to do the actual work.
 
-    If you want to support any of the other HTTP methods with their default
-    behaviour as in DetailEndpoint, just modify the `methods` list to
-    include the methods you need.
-
+    If you want to support any of the other HTTP methods with their default behaviour as in DetailEndpoint, just modify
+    the `methods` list to include the methods you need.
     """
     methods = ['POST']
 

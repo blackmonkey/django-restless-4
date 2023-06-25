@@ -1,20 +1,30 @@
 import base64
 
-from restless.views import Endpoint
+from restless.auth import AuthenticateEndpoint, BasicHttpAuthMixin, login_required
+from restless.http import Http201, Http400, Http403, Http404, HttpError
 from restless.models import serialize
-from restless.http import Http201, Http403, Http404, Http400, HttpError
-from restless.auth import (AuthenticateEndpoint, BasicHttpAuthMixin,
-    login_required)
-
+from restless.views import Endpoint
 from restless.modelviews import ListEndpoint, DetailEndpoint, ActionEndpoint
 
-from .models import *
-from .forms import *
+from .forms import AuthorForm
+from .models import Author, Book, Publisher
 
-__all__ = ['AuthorList', 'AuthorDetail', 'FailsIntentionally', 'TestLogin',
-    'TestBasicAuth', 'WildcardHandler', 'EchoView', 'ErrorRaisingView',
-    'PublisherAutoList', 'PublisherAutoDetail', 'ReadOnlyPublisherAutoList',
-    'PublisherAction', 'BookDetail', 'TestCustomAuthMethod']
+__all__ = [
+    'AuthorList',
+    'AuthorDetail',
+    'BookDetail',
+    'EchoView',
+    'ErrorRaisingView',
+    'FailsIntentionally',
+    'PublisherAction',
+    'PublisherAutoDetail',
+    'PublisherAutoList',
+    'ReadOnlyPublisherAutoList',
+    'TestBasicAuth',
+    'TestCustomAuthMethod',
+    'TestLogin',
+    'WildcardHandler',
+]
 
 
 class AuthorList(Endpoint):
@@ -26,9 +36,7 @@ class AuthorList(Endpoint):
         if form.is_valid():
             author = form.save()
             return Http201(serialize(author))
-        else:
-            return Http400(reason='invalid author data',
-                details=form.errors)
+        return Http400(reason='invalid author data', details=form.errors)
 
 
 class AuthorDetail(Endpoint):
@@ -55,9 +63,7 @@ class AuthorDetail(Endpoint):
         if form.is_valid():
             author = form.save()
             return serialize(author)
-        else:
-            return Http400(reason='invalid author data',
-                details=form.errors)
+        return Http400(reason='invalid author data', details=form.errors)
 
 
 class FailsIntentionally(Endpoint):
@@ -80,13 +86,12 @@ class TestCustomAuthMethod(Endpoint):
         user = request.params.get('user')
         if user == 'friend':
             return None
-        elif user == 'foe':
+        if user == 'foe':
             return Http403('you shall not pass')
-        elif user == 'exceptional-foe':
+        if user == 'exceptional-foe':
             raise HttpError(403, 'with exception')
-        else:
-            # this is an illegal return value for this function
-            return 42
+        # this is an illegal return value for this function
+        return 42
 
     def get(self, request):
         return 'OK'

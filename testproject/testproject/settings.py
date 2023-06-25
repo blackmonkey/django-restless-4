@@ -65,6 +65,10 @@ INSTALLED_APPS = (
 
 AUTH_PROFILE_MODULE = 'testapp.Author'
 
+# Default primary key field type
+# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
