@@ -1,10 +1,9 @@
 from django.urls import path, re_path
 
 from .views import (
-    AuthorList, AuthorDetail, FailsIntentionally, TestLogin,
-    TestBasicAuth, TestCustomAuthMethod, EchoView, ErrorRaisingView,
-    PublisherAutoList, ReadOnlyPublisherAutoList, PublisherAutoDetail,
-    PublisherAction, BookDetail, WildcardHandler
+    AuthorList, AuthorDetail, FailsIntentionally, TestLogin, TestBasicAuth, TestCustomAuthMethod, EchoView,
+    ErrorRaisingView, PublisherAutoList, ReadOnlyPublisherAutoList, PublisherAutoDetail, PublisherAction,
+    BookDetail, WildcardHandler
 )
 
 

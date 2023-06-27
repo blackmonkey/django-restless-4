@@ -19,7 +19,7 @@ except ImportError:
 class TestClient(Client):
 
     @staticmethod
-    def process(response):
+    def validate_response(response):
         try:
             response.json = json.loads(response.content.decode('utf-8'))
         except Exception:
@@ -27,7 +27,7 @@ class TestClient(Client):
         return response
 
     def get(self, url_name, data={}, follow=False, extra={}, *args, **kwargs):
-        return self.process(
+        return self.validate_response(
             super(TestClient, self)
                 .get(
                     reverse(url_name, args=args, kwargs=kwargs),
@@ -38,7 +38,7 @@ class TestClient(Client):
             )
 
     def post(self, url_name, data={}, content_type=MULTIPART_CONTENT, follow=False, extra={}, *args, **kwargs):
-        return self.process(
+        return self.validate_response(
             super(TestClient, self)
                 .post(
                     reverse(url_name, args=args, kwargs=kwargs),
@@ -50,7 +50,7 @@ class TestClient(Client):
             )
 
     def put(self, url_name, data={}, content_type=MULTIPART_CONTENT, follow=False, *args, **kwargs):
-        return self.process(
+        return self.validate_response(
             super(TestClient, self)
                 .put(
                     reverse(url_name, args=args, kwargs=kwargs),
@@ -61,7 +61,7 @@ class TestClient(Client):
             )
 
     def delete(self, url_name, data={}, content_type=MULTIPART_CONTENT, follow=False, *args, **kwargs):
-        return self.process(
+        return self.validate_response(
             super(TestClient, self)
                 .delete(
                     reverse(url_name, args=args, kwargs=kwargs),

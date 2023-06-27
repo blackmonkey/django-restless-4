@@ -2,8 +2,10 @@ import base64
 
 from restless.http import Http201, Http400, Http403, Http404, HttpError
 from restless.models import serialize
-from restless.views import AbstractAuthMixin, AuthenticateEndpoint, BasicHttpAuthMixin, Endpoint, login_required
-from restless.modelviews import ListEndpoint, DetailEndpoint, ActionEndpoint
+from restless.views import (
+    AbstractAuthMixin, ActionEndpoint, AuthenticateEndpoint, BasicHttpAuthMixin, DetailEndpoint,
+    Endpoint, ListEndpoint, login_required
+)
 
 from .forms import AuthorForm
 from .models import Author, Book, Publisher

@@ -32,7 +32,7 @@ For example, here's how to implement list and detail endpoints for `MyModel`
 class allowing the users to list, create, get details of, update and delete
 the models via API::
 
-    from restless.modelviews import ListEndpoint, DetailEndpoint
+    from restless.views import ListEndpoint, DetailEndpoint
     from myapp.models import MyModel
 
     class MyList(ListEndpoint):
@@ -224,8 +224,8 @@ Generic views for CRUD operations on models
 -------------------------------------------
 
 If you need a generic object CRUD operations, you can make
-use of the :py:class:`restless.modelviews.ListEndpoint` and
-:py:class:`restless.modelviews.DetailEndpoint` views. Here's an example of
+use of the :py:class:`restless.views.ListEndpoint` and
+:py:class:`restless.views.DetailEndpoint` views. Here's an example of
 the list and detail views providing an easy way to list, create, get, update
 and delete a Book objects in a database::
 
@@ -253,11 +253,11 @@ RPC-style API for model views
 -----------------------------
 
 Sometimes a RPC-style API on models is needed (for example, to set a flag on
-the model). The :py:class:`restless.modelviews.ActionEndpoint` provides an
+the model). The :py:class:`restless.views.ActionEndpoint` provides an
 easy way to do it. ActionEndpoint is a subclass of
-:py:class:`restless.modelviews.DetailEndpoint` allowing only `POST` HTTP
+:py:class:`restless.views.DetailEndpoint` allowing only `POST` HTTP
 request by default, which invoke the
-:py:meth:`restless.modelviews.DetailEndpoint.action` method.
+:py:meth:`restless.views.DetailEndpoint.action` method.
 
 Here's an example of a Book endpoint on which a POST marks the book as
 borrowed by the current user::
@@ -282,12 +282,12 @@ Base classes for class-based views implementing the API endpoints.
 .. automodule:: restless.views
    :members:
 
-restless.modelviews
+restless.views
 -------------------
 
 Generic class-based views providing CRUD API for the models.
 
-.. automodule:: restless.modelviews
+.. automodule:: restless.views
    :members:
 
 restless.models
