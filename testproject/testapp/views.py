@@ -1,7 +1,6 @@
 import base64
 
-from restless.http import Http201, Http400, Http403, Http404, HttpError
-from restless.models import serialize
+from restless.json import Http201, Http400, Http403, Http404, HttpError, serialize
 from restless.views import (
     AbstractAuthMixin, ActionEndpoint, AuthenticateEndpoint, BasicHttpAuthMixin, DetailEndpoint,
     Endpoint, ListEndpoint, login_required

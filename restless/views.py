@@ -17,8 +17,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
-from .http import Http200, Http201, Http400, Http401, Http403, Http500, HttpError
-from .models import serialize
+from .json import Http200, Http201, Http400, Http401, Http403, Http500, HttpError, serialize
 
 try:
     from django.utils.encoding import smart_str
@@ -348,7 +347,7 @@ class ListEndpoint(Endpoint):
         """
         Serialize the objects in the response.
 
-        By default, the method uses the :py:func:`restless.models.serialize` function to serialize the objects with
+        By default, the method uses the :py:func:`restless.json.serialize` function to serialize the objects with
         default behaviour. Override the method to customize the serialization.
         """
 
@@ -440,7 +439,7 @@ class DetailEndpoint(Endpoint):
         """
         Serialize the object in the response.
 
-        By default, the method uses the :py:func:`restless.models.serialize` function to serialize the object with
+        By default, the method uses the :py:func:`restless.json.serialize` function to serialize the object with
         default behaviour. Override the method to customize the serialization.
         """
 

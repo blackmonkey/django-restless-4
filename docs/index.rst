@@ -112,12 +112,12 @@ Model serialization
 -------------------
 
 Model serialization can be as simple or as complex as needed. In the simplest
-case, you just pass the object to :py:func:`restless.models.serialize`, and
+case, you just pass the object to :py:func:`restless.json.serialize`, and
 get back a dictionary with all the model fields (except related models)
 serialized::
 
     from django.contrib.auth import get_user_model
-    from restless.models import serialize
+    from restless.json import serialize
 
     User = get_user_model()
 
@@ -164,7 +164,7 @@ accross all their books::
             ])
 
 
-Please see the :py:func:`restless.models.serialize` documentation for detailed
+Please see the :py:func:`restless.json.serialize` documentation for detailed
 description how this works.
 
 .. note::
@@ -290,12 +290,12 @@ Generic class-based views providing CRUD API for the models.
 .. automodule:: restless.views
    :members:
 
-restless.models
+restless.json
 ---------------
 
 Model serialization helper.
 
-.. automodule:: restless.models
+.. automodule:: restless.json
    :members:
 
 restless.auth

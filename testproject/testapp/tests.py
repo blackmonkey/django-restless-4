@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.test.client import Client, MULTIPART_CONTENT
 
 from .models import Author, Publisher
-from restless.models import serialize, flatten
+from restless.json import serialize, flatten
 
 try:
     from urllib.parse import urlencode
